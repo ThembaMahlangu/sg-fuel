@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="style.css" />
+        <script type="module" src="translations.js"></script>
+        <script type="module" src="app.js"></script>
+        <title>SG Fuel</title>
+    </head>
+    <body>
+        <!-- Fuel Input Panel (Bottom Center) -->
+        <div id="fuel-input-card" class="fuel-card fuel-card--bottom">
+            <header class="card-header">
+                <h1 id="station-name-input"></h1>
+                <div class="fuel-info" data-translations="vehicle_fuel">
+                    <span id="capacity"></span>
+                </div>
+            </header>
+
+            <section class="card-section">
+                <form id="fuel-form" aria-label="Fuel purchase form">
+                    <div class="input-grid">
+                        <div class="field">
+                            <label for="liter" data-translations="liters"></label>
+                            <input
+                                min="0"
+                                step="1"
+                                type="number"
+                                id="liter"
+                                name="liter"
+                                value="0"
+                                placeholder="0"
+                                inputmode="numeric"
+                            />
+                        </div>
+                        <div class="field">
+                            <label for="price" data-translations="price"></label>
+                            <input
+                                min="0"
+                                step="1"
+                                type="number"
+                                id="price"
+                                name="price"
+                                value="0"
+                                placeholder="0"
+                                inputmode="numeric"
+                            />
+                        </div>
+                        <div class="actions">
+                            <button id="start-button" type="submit" data-translations="start_fueling"></button>
+                        </div>
+                    </div>
+
+                    <div class="input-progress">
+                        <div id="input-progress-fill"></div>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <!-- Pump Display Panel (Bottom Center) -->
+        <div id="pump-display-card" class="fuel-card fuel-card--bottom pump-display">
+            <header class="card-header">
+                <h1 data-translations="fueling_in_progress"></h1>
+                <div class="station-info">
+                    <span id="station-name">Gas Station</span>
+                </div>
+            </header>
+
+            <section class="pump-section">
+                <div class="fuel-display">
+                    <div class="display-row">
+                        <span class="label" data-translations="litres_pumped">Litres:</span>
+                        <span id="litres-pumped" class="value">0.00</span>
+                    </div>
+                    <div class="display-row">
+                        <span class="label" data-translations="total_cost">Total:</span>
+                        <span id="total-cost" class="value">0.00</span>
+                    </div>
+                    <div class="display-row">
+                        <span class="label" data-translations="price_per_litre">Per Litre:</span>
+                        <span id="price-per-litre" class="value">0.00</span>
+                    </div>
+                </div>
+
+                <div class="pump-progress">
+                    <div class="progress-bar">
+                        <div id="pump-progress-fill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progress-percentage">0%</span>
+                    </div>
+                </div>
+
+                <div class="pump-controls">
+                    <div class="fuel-rate">
+                        <span data-translations="fuel_rate">Rate: </span>
+                        <span id="current-rate">2.5 L/s</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Custom Progress Bar -->
+        <div id="progress-container" class="progress-container">
+            <div class="progress-card">
+                <div class="progress-header">
+                    <span id="progress-label">Loading...</span>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-bg">
+                        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div class="progress-percentage">
+                        <span id="progress-percent">0%</span>
+                    </div>
+                </div>
+                <div class="progress-cancel" id="progress-cancel-container" style="display: none;">
+                    <button id="progress-cancel-btn" class="cancel-btn-progress">Press ESC to cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Tablet UI -->
+        <div id="management-tablet" class="tablet-container">
+            <div class="tablet-screen">
+                <!-- Main Dashboard -->
+                <div id="management-main" class="tablet-page">
+                    <header class="tablet-header">
+                        <div class="header-content">
+                            <h1>⛽ <span id="mgmt-station-name"></span></h1>
+                            <button class="close-btn" id="close-management">✕</button>
+                        </div>
+                    </header>
+
+                    <div class="tablet-content">
+                        <!-- Status Overview -->
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <div class="info-icon">📊</div>
+                                <div class="info-content">
+                                    <div class="info-label">Station Status</div>
+                                    <div class="info-value" id="mgmt-status"></div>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="info-icon">⛽</div>
+                                <div class="info-content">
+                                    <div class="info-label">Fuel Reserves</div>
+                                    <div class="info-value" id="mgmt-fuel"></div>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="info-icon">💰</div>
+                                <div class="info-content">
+                                    <div class="info-label">Balance</div>
+                                    <div class="info-value" id="mgmt-balance"></div>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="info-icon">📈</div>
+                                <div class="info-content">
+                                    <div class="info-label">Today's Revenue</div>
+                                    <div class="info-value" id="mgmt-today"></div>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="info-icon">📊</div>
+                                <div class="info-content">
+                                    <div class="info-label">Weekly Revenue</div>
+                                    <div class="info-value" id="mgmt-weekly"></div>
+                                </div>
+                            </div>
+
+                            <div class="info-card" id="delivery-status-card" style="display: none;">
+                                <div class="info-icon">🚛</div>
+                                <div class="info-content">
+                                    <div class="info-label">Delivery Status</div>
+                                    <div class="info-value" id="mgmt-delivery"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="action-btn" id="btn-settings">
+                                <span class="btn-icon">⚙️</span>
+                                <span class="btn-text">Station Settings</span>
+                            </button>
+                            <button class="action-btn" id="btn-order-fuel" style="display: none;">
+                                <span class="btn-icon">📦</span>
+                                <span class="btn-text">Order Fuel</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="management-settings" class="tablet-page" style="display: none;">
+                    <header class="tablet-header">
+                        <div class="header-content">
+                            <button class="back-btn" id="back-from-settings">←</button>
+                            <h1>⚙️ Station Settings</h1>
+                            <div style="width: 32px;"></div>
+                        </div>
+                    </header>
+
+                    <div class="tablet-content">
+                        <div class="settings-list">
+                            <button class="settings-item" id="btn-set-price">
+                                <div class="settings-icon">💰</div>
+                                <div class="settings-info">
+                                    <div class="settings-title">Set Fuel Price</div>
+                                    <div class="settings-desc" id="current-price-display"></div>
+                                </div>
+                                <div class="settings-arrow">›</div>
+                            </button>
+
+                            <button class="settings-item" id="btn-transactions">
+                                <div class="settings-icon">🔍</div>
+                                <div class="settings-info">
+                                    <div class="settings-title">Transaction History</div>
+                                    <div class="settings-desc">View recent sales</div>
+                                </div>
+                                <div class="settings-arrow">›</div>
+                            </button>
+
+                            <button class="settings-item" id="btn-statistics">
+                                <div class="settings-icon">📊</div>
+                                <div class="settings-info">
+                                    <div class="settings-title">View Statistics</div>
+                                    <div class="settings-desc">Performance metrics</div>
+                                </div>
+                                <div class="settings-arrow">›</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Set Price Page -->
+                <div id="management-price" class="tablet-page" style="display: none;">
+                    <header class="tablet-header">
+                        <div class="header-content">
+                            <button class="back-btn" id="back-from-price">←</button>
+                            <h1>💰 Set Fuel Price</h1>
+                            <div style="width: 32px;"></div>
+                        </div>
+                    </header>
+
+                    <div class="tablet-content">
+                        <div class="input-form">
+                            <div class="form-group">
+                                <label for="price-input">Price per Litre</label>
+                                <input type="number" id="price-input" placeholder="0" min="0" step="1" />
+                                <div class="form-hint" id="price-hint">Current price: R0</div>
+                            </div>
+                            <button class="submit-btn" id="submit-price">Update Price</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Fuel Page -->
+                <div id="management-order" class="tablet-page" style="display: none;">
+                    <header class="tablet-header">
+                        <div class="header-content">
+                            <button class="back-btn" id="back-from-order">←</button>
+                            <h1>📦 Order Fuel</h1>
+                            <div style="width: 32px;"></div>
+                        </div>
+                    </header>
+
+                    <div class="tablet-content">
+                        <div class="input-form">
+                            <div class="form-group">
+                                <label for="order-amount">Amount (Litres)</label>
+                                <input type="number" id="order-amount" placeholder="0" min="0" step="100" />
+                                <div class="form-hint" id="order-hint">Cost will be calculated</div>
+                            </div>
+                            <button class="submit-btn" id="submit-order">Place Order</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Page -->
+                <div id="management-transactions" class="tablet-page" style="display: none;">
+                    <header class="tablet-header">
+                        <div class="header-content">
+                            <button class="back-btn" id="back-from-transactions">←</button>
+                            <h1>🔍 Transactions</h1>
+                            <div style="width: 32px;"></div>
+                        </div>
+                    </header>
+
+                    <div class="tablet-content">
+                        <div id="transactions-list" class="transactions-list">
+                            <!-- Transactions will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Page -->
+                <div id="management-statistics" class="tablet-page" style="display: none;">
+                    <header class="tablet-header">
+                        <div class="header-content">
+                            <button class="back-btn" id="back-from-statistics">←</button>
+                            <h1>📊 Statistics</h1>
+                            <div style="width: 32px;"></div>
+                        </div>
+                    </header>
+
+                    <div class="tablet-content">
+                        <div class="stats-grid" id="stats-grid">
+                            <!-- Stats will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
