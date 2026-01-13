@@ -716,29 +716,65 @@ end
 local function AddTargetModel(models, options)
     local target = GetTargetResource()
     if not target then return end
-    
+
     if target == 'ox_target' then
-        exports.ox_target:addModel(models, options)
+        local oxOptions = {}
+
+        for _, opt in ipairs(options) do
+            oxOptions[#oxOptions + 1] = {
+                name = opt.name,
+                label = opt.label,
+                icon = opt.icon,
+                distance = opt.distance or 2.0,
+                onSelect = function(data)
+                    opt.action(data.entity)
+                end
+            }
+        end
+
+        exports.ox_target:addModel(models, oxOptions)
+
     else
-        exports['qb-target']:AddTargetModel(models, options)
+        exports['qb-target']:AddTargetModel(models, {
+            options = options,
+            distance = options[1]?.distance or 2.0
+        })
     end
 end
 
 local function AddGlobalVehicle(options)
     local target = GetTargetResource()
     if not target then return end
-    
+
     if target == 'ox_target' then
-        exports.ox_target:addGlobalVehicle(options)
+        local oxOptions = {}
+
+        for _, opt in ipairs(options) do
+            oxOptions[#oxOptions + 1] = {
+                name = opt.name,
+                label = opt.label,
+                icon = opt.icon,
+                distance = opt.distance or 2.0,
+                onSelect = function(data)
+                    opt.action(data.entity)
+                end
+            }
+        end
+
+        exports.ox_target:addGlobalVehicle(oxOptions)
+
     else
-        exports['qb-target']:AddGlobalVehicle(options)
+        exports['qb-target']:AddGlobalVehicle({
+            options = options,
+            distance = options[1]?.distance or 2.0
+        })
     end
 end
 
 local function RemoveGlobalVehicle(name)
     local target = GetTargetResource()
     if not target then return end
-    
+
     if target == 'ox_target' then
         exports.ox_target:removeGlobalVehicle(name)
     else
