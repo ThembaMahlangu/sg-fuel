@@ -206,5 +206,5 @@ For support, please ensure you:
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 1.0.1  
 **Author**: sgMAGLERA
