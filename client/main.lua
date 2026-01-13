@@ -713,21 +713,24 @@ local function GetTargetResource()
     return targetResource
 end
 
-local function AddTargetModel(models, options)
+local function AddTargetModel(models, options, distance)
     local target = GetTargetResource()
-    if not target then return end
+    if not target or not options or #options == 0 then return end
 
     if target == 'ox_target' then
         local oxOptions = {}
 
-        for _, opt in ipairs(options) do
+        for i, opt in ipairs(options) do
             oxOptions[#oxOptions + 1] = {
-                name = opt.name,
+                name = opt.name or ('sg_fuel_model_' .. i),
                 label = opt.label,
                 icon = opt.icon,
-                distance = opt.distance or 2.0,
+                distance = distance or opt.distance or 2.0,
+                canInteract = opt.canInteract,
                 onSelect = function(data)
-                    opt.action(data.entity)
+                    if opt.action then
+                        opt.action(data.entity)
+                    end
                 end
             }
         end
@@ -737,26 +740,29 @@ local function AddTargetModel(models, options)
     else
         exports['qb-target']:AddTargetModel(models, {
             options = options,
-            distance = options[1]?.distance or 2.0
+            distance = distance or 2.0
         })
     end
 end
 
-local function AddGlobalVehicle(options)
+local function AddGlobalVehicle(options, distance)
     local target = GetTargetResource()
-    if not target then return end
+    if not target or not options or #options == 0 then return end
 
     if target == 'ox_target' then
         local oxOptions = {}
 
-        for _, opt in ipairs(options) do
+        for i, opt in ipairs(options) do
             oxOptions[#oxOptions + 1] = {
-                name = opt.name,
+                name = opt.name or ('sg_fuel_vehicle_' .. i),
                 label = opt.label,
                 icon = opt.icon,
-                distance = opt.distance or 2.0,
+                distance = distance or opt.distance or 3.0,
+                canInteract = opt.canInteract,
                 onSelect = function(data)
-                    opt.action(data.entity)
+                    if opt.action then
+                        opt.action(data.entity)
+                    end
                 end
             }
         end
@@ -766,7 +772,7 @@ local function AddGlobalVehicle(options)
     else
         exports['qb-target']:AddGlobalVehicle({
             options = options,
-            distance = options[1]?.distance or 2.0
+            distance = distance or 3.0
         })
     end
 end
@@ -834,10 +840,7 @@ local setUpTarget = function ()
     }
 
     for _, hash in pairs(Config.PumpModels) do
-        AddTargetModel(hash, {
-            options = pumpOptions,
-            distance = 1.5
-        })
+        AddTargetModel(hash, pumpOptions, 1.5)
     end
 
     if Config.VehicleInteractionMethod == 'target' then
@@ -878,7 +881,7 @@ local setUpTarget = function ()
             distance = 3
         }
         
-        AddGlobalVehicle(vehicleOptions)
+        AddGlobalVehicle(vehicleOptions.options, vehicleOptions.distance)
     end
 end
 
