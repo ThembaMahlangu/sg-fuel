@@ -94,6 +94,44 @@ const formatNumber = (num, decimals = 2) => Number(num).toFixed(decimals);
 let CURRENCY_SYMBOL = "$";
 const formatCurrency = (num) => `${CURRENCY_SYMBOL}${formatNumber(num, 2)}`;
 
+const formatDate = (dateInput) => {
+    if (!dateInput) return "N/A";
+    
+    let date;
+    
+    // Handle Unix timestamp (milliseconds)
+    if (typeof dateInput === "number") {
+        date = new Date(dateInput);
+    } 
+    // Handle Unix timestamp (seconds)
+    else if (typeof dateInput === "string" && /^\d+$/.test(dateInput)) {
+        const timestamp = parseInt(dateInput);
+        // If timestamp is less than 13 digits, it's in seconds, multiply by 1000
+        date = new Date(timestamp < 1000000000000 ? timestamp * 1000 : timestamp);
+    }
+    // Handle date string
+    else if (typeof dateInput === "string") {
+        date = new Date(dateInput);
+    } 
+    else {
+        date = new Date(dateInput);
+    }
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+        return dateInput.toString(); // Return original if invalid
+    }
+
+    // Format: 05 Nov 2025 12:00
+    const month = date.toLocaleString('en-ZA', { month: 'short' });
+    const day = date.toLocaleString('en-ZA', { day: '2-digit' });
+    const year = date.toLocaleString('en-ZA', { year: 'numeric' });
+    const hours = date.toLocaleString('en-ZA', { hour: '2-digit' });
+    const minutes = date.toLocaleString('en-ZA', { minute: '2-digit' });
+    
+    return `${day} ${month} ${year} ${hours}:${minutes}`;
+};
+
 let fuelingInterval = null;
 
 const startFueling = () => {
@@ -463,7 +501,10 @@ const showManagement = () => {
         if ($fuelInputCard) $fuelInputCard.classList.remove("show");
         if ($pumpDisplayCard) $pumpDisplayCard.classList.remove("show");
         
-        $managementTablet.classList.add("show");
+        $managementTablet.style.display = "block";
+        setTimeout(() => {
+            $managementTablet.classList.add("show");
+        }, 10);
         document.body.style.display = "block";
         document.body.style.pointerEvents = "auto";
     }
@@ -480,6 +521,7 @@ const hideManagement = () => {
                 document.body.style.display = "none";
                 document.body.style.pointerEvents = "none";
             }
+            $managementTablet.style.display = "none";
             showPage("main");
         }, 300);
     }
@@ -534,17 +576,17 @@ const updateMainDashboard = (data) => {
     if (data.deliveryStatus && deliveryCard && deliveryText) {
         deliveryCard.style.display = "flex";
         let statusText = "No delivery";
-        if (data.deliveryStatus.status === "pending") statusText = "⏳ Pending";
-        else if (data.deliveryStatus.status === "in_progress") statusText = "🚛 In Progress";
-        else if (data.deliveryStatus.status === "completed") statusText = "✅ Completed";
-        deliveryText.textContent = statusText;
+        if (data.deliveryStatus.status === "pending") statusText = '<i class="fas fa-clock"></i> Pending';
+        else if (data.deliveryStatus.status === "in_progress") statusText = '<i class="fas fa-truck"></i> In Progress';
+        else if (data.deliveryStatus.status === "completed") statusText = '<i class="fas fa-check-circle"></i> Completed';
+        deliveryText.innerHTML = statusText;
     } else if (deliveryCard) {
         deliveryCard.style.display = "none";
     }
     
     const orderBtn = $("#btn-order-fuel");
     if (orderBtn) {
-        orderBtn.style.display = data.isBoss ? "block" : "none";
+        orderBtn.style.display = data.isBoss ? "flex" : "none";
     }
     
     const priceDisplay = $("#current-price-display");
@@ -582,7 +624,7 @@ const updateTransactions = (transactions) => {
                 <span class="transaction-amount ${amountClass}">${prefix}${formatCurrencyMgmt(Math.abs(transaction.amount))}</span>
             </div>
             <div class="transaction-desc">${transaction.description || "N/A"}</div>
-            <div class="transaction-date">${transaction.created || "N/A"}</div>
+            <div class="transaction-date">${formatDate(transaction.created)}</div>
         `;
         
         list.appendChild(item);
@@ -590,10 +632,8 @@ const updateTransactions = (transactions) => {
 };
 
 const updateStatistics = (stats) => {
-    const grid = $("#stats-grid");
-    if (!grid) return;
-    
-    grid.innerHTML = "";
+    const section = $("#stats-grid").closest('.boss-menu-section');
+    if (!section) return;
     
     const analytics = stats.fuel_analytics || {};
     const totalSales = parseFloat(analytics.total_sales) || 0;
@@ -601,45 +641,119 @@ const updateStatistics = (stats) => {
     const profit = parseFloat(analytics.profit) || 0;
     const deliveryCost = Math.abs(parseFloat(analytics.delivery_cost) || 0);
     
-    const cards = [
-        {
-            title: "📊 Weekly Performance",
-            content: `Total Income: ${formatCurrencyMgmt(stats.weekly_income || 0)}`
-        },
-        {
-            title: "⛽ Fuel Sales (7 Days)",
-            content: `
-Transactions: ${analytics.customer_transactions || 0}
-Litres Sold: ${formatNumberWithCommas(litresSold)}
-Avg per Sale: ${(analytics.avg_litres_per_sale || 0).toFixed(1)} litres
-Revenue per Litre: ${formatCurrencyMgmt(litresSold > 0 ? (totalSales / litresSold) : 0)}`
-        },
-        {
-            title: "💰 Financial Overview",
-            content: `
-Sales Revenue: ${formatCurrencyMgmt(totalSales)}
-Supply Cost: ${formatCurrencyMgmt(deliveryCost)}
-Profit: ${formatCurrencyMgmt(profit)}
-Profit Margin: ${totalSales > 0 ? ((profit / totalSales) * 100).toFixed(1) : 0}%`
-        },
-        {
-            title: "📦 Supply Details",
-            content: `
-Deliveries: ${analytics.delivery_count || 0} (${formatNumberWithCommas(analytics.delivery_litres || 0)} litres)
-Current Stock: ${formatNumberWithCommas(stats.fuel_level || 0)} litres
-Avg Transaction: ${formatCurrencyMgmt(analytics.avg_transaction || 0)}`
-        }
-    ];
+    const statsGrid = $("#stats-grid");
+    if (!statsGrid) return;
     
-    cards.forEach(card => {
-        const cardEl = document.createElement("div");
-        cardEl.className = "stat-card";
-        cardEl.innerHTML = `
-            <div class="stat-title">${card.title}</div>
-            <div class="stat-content">${card.content}</div>
-        `;
-        grid.appendChild(cardEl);
-    });
+    statsGrid.innerHTML = "";
+    
+    // Weekly Performance
+    const weeklyStat = document.createElement("div");
+    weeklyStat.className = "boss-menu-stat";
+    weeklyStat.innerHTML = `
+        <div class="boss-menu-stat-label">Weekly Income</div>
+        <div class="boss-menu-stat-value">${formatCurrencyMgmt(stats.weekly_income || 0)}</div>
+    `;
+    statsGrid.appendChild(weeklyStat);
+    
+    // Transactions
+    const transactionsStat = document.createElement("div");
+    transactionsStat.className = "boss-menu-stat";
+    transactionsStat.innerHTML = `
+        <div class="boss-menu-stat-label">Transactions</div>
+        <div class="boss-menu-stat-value">${analytics.customer_transactions || 0}</div>
+    `;
+    statsGrid.appendChild(transactionsStat);
+    
+    // Litres Sold
+    const litresStat = document.createElement("div");
+    litresStat.className = "boss-menu-stat";
+    litresStat.innerHTML = `
+        <div class="boss-menu-stat-label">Litres Sold</div>
+        <div class="boss-menu-stat-value">${formatNumberWithCommas(litresSold)}</div>
+    `;
+    statsGrid.appendChild(litresStat);
+    
+    // Avg per Sale
+    const avgSaleStat = document.createElement("div");
+    avgSaleStat.className = "boss-menu-stat";
+    avgSaleStat.innerHTML = `
+        <div class="boss-menu-stat-label">Avg per Sale</div>
+        <div class="boss-menu-stat-value">${(analytics.avg_litres_per_sale || 0).toFixed(1)} L</div>
+    `;
+    statsGrid.appendChild(avgSaleStat);
+    
+    // Sales Revenue
+    const revenueStat = document.createElement("div");
+    revenueStat.className = "boss-menu-stat";
+    revenueStat.innerHTML = `
+        <div class="boss-menu-stat-label">Sales Revenue</div>
+        <div class="boss-menu-stat-value boss-menu-stat-success">${formatCurrencyMgmt(totalSales)}</div>
+    `;
+    statsGrid.appendChild(revenueStat);
+    
+    // Supply Cost
+    const costStat = document.createElement("div");
+    costStat.className = "boss-menu-stat";
+    costStat.innerHTML = `
+        <div class="boss-menu-stat-label">Supply Cost</div>
+        <div class="boss-menu-stat-value">${formatCurrencyMgmt(deliveryCost)}</div>
+    `;
+    statsGrid.appendChild(costStat);
+    
+    // Profit
+    const profitStat = document.createElement("div");
+    profitStat.className = "boss-menu-stat";
+    profitStat.innerHTML = `
+        <div class="boss-menu-stat-label">Profit</div>
+        <div class="boss-menu-stat-value boss-menu-stat-success">${formatCurrencyMgmt(profit)}</div>
+    `;
+    statsGrid.appendChild(profitStat);
+    
+    // Profit Margin
+    const marginStat = document.createElement("div");
+    marginStat.className = "boss-menu-stat";
+    const margin = totalSales > 0 ? ((profit / totalSales) * 100).toFixed(1) : 0;
+    marginStat.innerHTML = `
+        <div class="boss-menu-stat-label">Profit Margin</div>
+        <div class="boss-menu-stat-value">${margin}%</div>
+    `;
+    statsGrid.appendChild(marginStat);
+    
+    // Deliveries
+    const deliveriesStat = document.createElement("div");
+    deliveriesStat.className = "boss-menu-stat";
+    deliveriesStat.innerHTML = `
+        <div class="boss-menu-stat-label">Deliveries</div>
+        <div class="boss-menu-stat-value">${analytics.delivery_count || 0}</div>
+    `;
+    statsGrid.appendChild(deliveriesStat);
+    
+    // Delivery Litres
+    const deliveryLitresStat = document.createElement("div");
+    deliveryLitresStat.className = "boss-menu-stat";
+    deliveryLitresStat.innerHTML = `
+        <div class="boss-menu-stat-label">Delivery Litres</div>
+        <div class="boss-menu-stat-value">${formatNumberWithCommas(analytics.delivery_litres || 0)}</div>
+    `;
+    statsGrid.appendChild(deliveryLitresStat);
+    
+    // Current Stock
+    const stockStat = document.createElement("div");
+    stockStat.className = "boss-menu-stat";
+    stockStat.innerHTML = `
+        <div class="boss-menu-stat-label">Current Stock</div>
+        <div class="boss-menu-stat-value">${formatNumberWithCommas(stats.fuel_level || 0)} L</div>
+    `;
+    statsGrid.appendChild(stockStat);
+    
+    // Avg Transaction
+    const avgTransactionStat = document.createElement("div");
+    avgTransactionStat.className = "boss-menu-stat";
+    avgTransactionStat.innerHTML = `
+        <div class="boss-menu-stat-label">Avg Transaction</div>
+        <div class="boss-menu-stat-value">${formatCurrencyMgmt(analytics.avg_transaction || 0)}</div>
+    `;
+    statsGrid.appendChild(avgTransactionStat);
 };
 
 if ($("#close-management")) {

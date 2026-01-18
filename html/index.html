@@ -4,6 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <script type="module" src="translations.js"></script>
         <script type="module" src="app.js"></script>
         <title>SG Fuel</title>
@@ -12,8 +13,12 @@
         <!-- Fuel Input Panel (Bottom Center) -->
         <div id="fuel-input-card" class="fuel-card fuel-card--bottom">
             <header class="card-header">
-                <h1 id="station-name-input"></h1>
+                <h1>
+                    <i class="fas fa-gas-pump"></i>
+                    <span id="station-name-input"></span>
+                </h1>
                 <div class="fuel-info" data-translations="vehicle_fuel">
+                    <i class="fas fa-tachometer-alt"></i>
                     <span id="capacity"></span>
                 </div>
             </header>
@@ -62,8 +67,12 @@
         <!-- Pump Display Panel (Bottom Center) -->
         <div id="pump-display-card" class="fuel-card fuel-card--bottom pump-display">
             <header class="card-header">
-                <h1 data-translations="fueling_in_progress"></h1>
+                <h1>
+                    <i class="fas fa-gas-pump"></i>
+                    <span data-translations="fueling_in_progress">Fueling In Progress</span>
+                </h1>
                 <div class="station-info">
+                    <i class="fas fa-map-marker-alt"></i>
                     <span id="station-name">Gas Station</span>
                 </div>
             </header>
@@ -123,136 +132,156 @@
         </div>
 
         <!-- Management Tablet UI -->
-        <div id="management-tablet" class="tablet-container">
-            <div class="tablet-screen">
+        <div id="management-tablet" class="container-wrapper" style="display: none;">
+            <div class="container-tablet">
+                <div class="container-header">
+                    <div class="container-header-left">
+                        <h3 class="container-title">
+                            <i class="fas fa-gas-pump"></i>
+                            <span id="mgmt-station-name">Gas Station</span>
+                        </h3>
+                    </div>
+                    <div class="container-header-right">
+                        <button class="container-btn-close" id="close-management">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="container-body">
                 <!-- Main Dashboard -->
-                <div id="management-main" class="tablet-page">
-                    <header class="tablet-header">
-                        <div class="header-content">
-                            <h1>⛽ <span id="mgmt-station-name"></span></h1>
-                            <button class="close-btn" id="close-management">✕</button>
-                        </div>
-                    </header>
-
-                    <div class="tablet-content">
-                        <!-- Status Overview -->
-                        <div class="info-grid">
-                            <div class="info-card">
-                                <div class="info-icon">📊</div>
-                                <div class="info-content">
-                                    <div class="info-label">Station Status</div>
-                                    <div class="info-value" id="mgmt-status"></div>
-                                </div>
-                            </div>
-
-                            <div class="info-card">
-                                <div class="info-icon">⛽</div>
-                                <div class="info-content">
-                                    <div class="info-label">Fuel Reserves</div>
-                                    <div class="info-value" id="mgmt-fuel"></div>
-                                </div>
-                            </div>
-
-                            <div class="info-card">
-                                <div class="info-icon">💰</div>
-                                <div class="info-content">
-                                    <div class="info-label">Balance</div>
-                                    <div class="info-value" id="mgmt-balance"></div>
-                                </div>
-                            </div>
-
-                            <div class="info-card">
-                                <div class="info-icon">📈</div>
-                                <div class="info-content">
-                                    <div class="info-label">Today's Revenue</div>
-                                    <div class="info-value" id="mgmt-today"></div>
-                                </div>
-                            </div>
-
-                            <div class="info-card">
-                                <div class="info-icon">📊</div>
-                                <div class="info-content">
-                                    <div class="info-label">Weekly Revenue</div>
-                                    <div class="info-value" id="mgmt-weekly"></div>
-                                </div>
-                            </div>
-
-                            <div class="info-card" id="delivery-status-card" style="display: none;">
-                                <div class="info-icon">🚛</div>
-                                <div class="info-content">
-                                    <div class="info-label">Delivery Status</div>
-                                    <div class="info-value" id="mgmt-delivery"></div>
-                                </div>
+                <div id="management-main" class="boss-menu-content">
+                    <!-- Status Overview -->
+                    <div class="boss-menu-section">
+                        <div class="boss-menu-section-header">
+                            <div class="boss-menu-section-title">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Station Overview</span>
                             </div>
                         </div>
+                        <div class="boss-menu-stats">
+                            <div class="boss-menu-stat">
+                                <div class="boss-menu-stat-label">Station Status</div>
+                                <div class="boss-menu-stat-value" id="mgmt-status"></div>
+                            </div>
+                            <div class="boss-menu-stat">
+                                <div class="boss-menu-stat-label">Fuel Reserves</div>
+                                <div class="boss-menu-stat-value" id="mgmt-fuel"></div>
+                            </div>
+                            <div class="boss-menu-stat">
+                                <div class="boss-menu-stat-label">Balance</div>
+                                <div class="boss-menu-stat-value" id="mgmt-balance"></div>
+                            </div>
+                            <div class="boss-menu-stat">
+                                <div class="boss-menu-stat-label">Today's Revenue</div>
+                                <div class="boss-menu-stat-value" id="mgmt-today"></div>
+                            </div>
+                            <div class="boss-menu-stat">
+                                <div class="boss-menu-stat-label">Weekly Revenue</div>
+                                <div class="boss-menu-stat-value" id="mgmt-weekly"></div>
+                            </div>
+                            <div class="boss-menu-stat" id="delivery-status-card" style="display: none;">
+                                <div class="boss-menu-stat-label">Delivery Status</div>
+                                <div class="boss-menu-stat-value" id="mgmt-delivery"></div>
+                            </div>
+                        </div>
+                    </div>
 
-                        <!-- Action Buttons -->
-                        <div class="action-buttons">
-                            <button class="action-btn" id="btn-settings">
-                                <span class="btn-icon">⚙️</span>
-                                <span class="btn-text">Station Settings</span>
+                    <!-- Quick Actions -->
+                    <div class="boss-menu-section">
+                        <div class="boss-menu-section-header">
+                            <div class="boss-menu-section-title">
+                                <i class="fas fa-tasks"></i>
+                                <span>Quick Actions</span>
+                            </div>
+                        </div>
+                        <div class="boss-menu-actions">
+                            <button class="boss-menu-action-btn" id="btn-settings">
+                                <i class="fas fa-cog"></i>
+                                <span>Station Settings</span>
                             </button>
-                            <button class="action-btn" id="btn-order-fuel" style="display: none;">
-                                <span class="btn-icon">📦</span>
-                                <span class="btn-text">Order Fuel</span>
+                            <button class="boss-menu-action-btn" id="btn-order-fuel" style="display: none;">
+                                <i class="fas fa-truck"></i>
+                                <span>Order Fuel</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Settings Page -->
-                <div id="management-settings" class="tablet-page" style="display: none;">
-                    <header class="tablet-header">
-                        <div class="header-content">
-                            <button class="back-btn" id="back-from-settings">←</button>
-                            <h1>⚙️ Station Settings</h1>
-                            <div style="width: 32px;"></div>
+                <div id="management-settings" class="boss-menu-content" style="display: none;">
+                    <div class="container-header" style="position: static; margin: -24px -24px 24px -24px; border-bottom: 1px solid rgba(107,114,128,0.2);">
+                        <div class="container-header-left">
+                            <h3 class="container-title">
+                                <i class="fas fa-cog"></i>
+                                <span>Station Settings</span>
+                            </h3>
                         </div>
-                    </header>
-
-                    <div class="tablet-content">
+                        <div class="container-header-right">
+                            <button class="container-btn-close" id="back-from-settings">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
                         <div class="settings-list">
                             <button class="settings-item" id="btn-set-price">
-                                <div class="settings-icon">💰</div>
+                                <div class="settings-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
                                 <div class="settings-info">
                                     <div class="settings-title">Set Fuel Price</div>
                                     <div class="settings-desc" id="current-price-display"></div>
                                 </div>
-                                <div class="settings-arrow">›</div>
+                                <div class="settings-arrow">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
                             </button>
 
                             <button class="settings-item" id="btn-transactions">
-                                <div class="settings-icon">🔍</div>
+                                <div class="settings-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
                                 <div class="settings-info">
                                     <div class="settings-title">Transaction History</div>
                                     <div class="settings-desc">View recent sales</div>
                                 </div>
-                                <div class="settings-arrow">›</div>
+                                <div class="settings-arrow">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
                             </button>
 
                             <button class="settings-item" id="btn-statistics">
-                                <div class="settings-icon">📊</div>
+                                <div class="settings-icon">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
                                 <div class="settings-info">
                                     <div class="settings-title">View Statistics</div>
                                     <div class="settings-desc">Performance metrics</div>
                                 </div>
-                                <div class="settings-arrow">›</div>
+                                <div class="settings-arrow">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Set Price Page -->
-                <div id="management-price" class="tablet-page" style="display: none;">
-                    <header class="tablet-header">
-                        <div class="header-content">
-                            <button class="back-btn" id="back-from-price">←</button>
-                            <h1>💰 Set Fuel Price</h1>
-                            <div style="width: 32px;"></div>
+                <div id="management-price" class="boss-menu-content" style="display: none;">
+                    <div class="container-header" style="position: static; margin: -24px -24px 24px -24px; border-bottom: 1px solid rgba(107,114,128,0.2);">
+                        <div class="container-header-left">
+                            <h3 class="container-title">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span>Set Fuel Price</span>
+                            </h3>
                         </div>
-                    </header>
-
-                    <div class="tablet-content">
+                        <div class="container-header-right">
+                            <button class="container-btn-close" id="back-from-price">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="boss-menu-section">
                         <div class="input-form">
                             <div class="form-group">
                                 <label for="price-input">Price per Litre</label>
@@ -265,16 +294,21 @@
                 </div>
 
                 <!-- Order Fuel Page -->
-                <div id="management-order" class="tablet-page" style="display: none;">
-                    <header class="tablet-header">
-                        <div class="header-content">
-                            <button class="back-btn" id="back-from-order">←</button>
-                            <h1>📦 Order Fuel</h1>
-                            <div style="width: 32px;"></div>
+                <div id="management-order" class="boss-menu-content" style="display: none;">
+                    <div class="container-header" style="position: static; margin: -24px -24px 24px -24px; border-bottom: 1px solid rgba(107,114,128,0.2);">
+                        <div class="container-header-left">
+                            <h3 class="container-title">
+                                <i class="fas fa-truck"></i>
+                                <span>Order Fuel</span>
+                            </h3>
                         </div>
-                    </header>
-
-                    <div class="tablet-content">
+                        <div class="container-header-right">
+                            <button class="container-btn-close" id="back-from-order">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="boss-menu-section">
                         <div class="input-form">
                             <div class="form-group">
                                 <label for="order-amount">Amount (Litres)</label>
@@ -287,16 +321,21 @@
                 </div>
 
                 <!-- Transactions Page -->
-                <div id="management-transactions" class="tablet-page" style="display: none;">
-                    <header class="tablet-header">
-                        <div class="header-content">
-                            <button class="back-btn" id="back-from-transactions">←</button>
-                            <h1>🔍 Transactions</h1>
-                            <div style="width: 32px;"></div>
+                <div id="management-transactions" class="boss-menu-content" style="display: none;">
+                    <div class="container-header" style="position: static; margin: -24px -24px 24px -24px; border-bottom: 1px solid rgba(107,114,128,0.2);">
+                        <div class="container-header-left">
+                            <h3 class="container-title">
+                                <i class="fas fa-search"></i>
+                                <span>Transactions</span>
+                            </h3>
                         </div>
-                    </header>
-
-                    <div class="tablet-content">
+                        <div class="container-header-right">
+                            <button class="container-btn-close" id="back-from-transactions">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="boss-menu-section">
                         <div id="transactions-list" class="transactions-list">
                             <!-- Transactions will be populated here -->
                         </div>
@@ -304,19 +343,30 @@
                 </div>
 
                 <!-- Statistics Page -->
-                <div id="management-statistics" class="tablet-page" style="display: none;">
-                    <header class="tablet-header">
-                        <div class="header-content">
-                            <button class="back-btn" id="back-from-statistics">←</button>
-                            <h1>📊 Statistics</h1>
-                            <div style="width: 32px;"></div>
+                <div id="management-statistics" class="boss-menu-content" style="display: none;">
+                    <div class="container-header" style="position: static; margin: -24px -24px 24px -24px; border-bottom: 1px solid rgba(107,114,128,0.2);">
+                        <div class="container-header-left">
+                            <h3 class="container-title">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Statistics</span>
+                            </h3>
                         </div>
-                    </header>
-
-                    <div class="tablet-content">
-                        <div class="stats-grid" id="stats-grid">
+                        <div class="container-header-right">
+                            <button class="container-btn-close" id="back-from-statistics">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="boss-menu-section">
+                        <div class="boss-menu-stats" id="stats-grid">
                             <!-- Stats will be populated here -->
                         </div>
+                    </div>
+                </div>
+                </div>
+                <div class="container-footer">
+                    <div class="container-footer-hint">
+                        <span>Press ESC to close</span>
                     </div>
                 </div>
             </div>
